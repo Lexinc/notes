@@ -1,26 +1,23 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:notes/presentation/note_screen/utilities/file_handing_hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:notes/utilities/file_handing_hive.dart';
+import '../../../utilities/hive_type_adapter.dart';
+import '../../note_screen/note_screen.dart';
 
 class HomeScreenList extends StatelessWidget {
-  const HomeScreenList({super.key, required this.index});
-  final int index;
+  const HomeScreenList({super.key, required this.box, required this.boxKey});
+
+  final Box<NoteListModel> box;
+  final int boxKey;
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return FutureBuilder(
-        future: FileHandlingModel().read(index),
+        future: FileHandlingModel().read(boxKey),
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: Container(
-                child: LoadingAnimationWidget.waveDots(
-                    color: Colors.white, size: 40),
-              ),
-            );
-          } else if (snapshot.hasError) {
+          if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
           } else {
             List<String> errorValues = [
@@ -32,17 +29,27 @@ class HomeScreenList extends StatelessWidget {
             return Container(
               padding: EdgeInsets.symmetric(vertical: 10),
               decoration: BoxDecoration(
-                  color: Colors.amber,
+                  color: Colors.green[800],
                   borderRadius: BorderRadius.all(Radius.circular(8))),
               margin: EdgeInsets.symmetric(horizontal: 10),
               child: ListTile(
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => NoteScreen(
+                            noteTitleControllerData: values[0],
+                            noteTextControllerData: values[1],
+                            boxKey: boxKey,
+                          )));
+                },
                 title: Text(
                   values[0],
                   style: theme.textTheme.titleSmall,
                 ),
                 trailing: IconButton(
                     alignment: Alignment.center,
-                    onPressed: () {},
+                    onPressed: () {
+                      box.delete(boxKey);
+                    },
                     icon: Icon(
                       Icons.delete,
                       size: 28,

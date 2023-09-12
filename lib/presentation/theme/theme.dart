@@ -16,7 +16,7 @@ final darkTheme = ThemeData(
     ),
     labelSmall: TextStyle(
         fontStyle: FontStyle.italic,
-        color: const Color.fromARGB(138, 255, 255, 255)),
+        color: const Color.fromARGB(126, 238, 238, 238)),
   ),
   scaffoldBackgroundColor: Colors.grey[900],
   floatingActionButtonTheme:

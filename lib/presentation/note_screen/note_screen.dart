@@ -2,11 +2,17 @@
 
 import 'package:flutter/material.dart';
 import 'package:notes/presentation/home_screen/home_screen.dart';
-import 'package:notes/presentation/note_screen/utilities/file_handing_hive.dart';
+import 'package:notes/utilities/file_handing_hive.dart';
 
 class NoteScreen extends StatefulWidget {
-  NoteScreen({super.key});
-
+  NoteScreen(
+      {super.key,
+      this.noteTitleControllerData,
+      this.noteTextControllerData,
+      this.boxKey});
+  String? noteTitleControllerData;
+  String? noteTextControllerData;
+  int? boxKey;
   @override
   State<NoteScreen> createState() => _NoteScreenState();
 }
@@ -14,6 +20,13 @@ class NoteScreen extends StatefulWidget {
 class _NoteScreenState extends State<NoteScreen> {
   TextEditingController _noteTitleController = TextEditingController();
   TextEditingController _noteTextController = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    _noteTitleController.text = widget.noteTitleControllerData ?? '';
+    _noteTextController.text = widget.noteTextControllerData ?? '';
+  }
+
   @override
   void dispose() {
     _noteTitleController.dispose();
@@ -24,6 +37,7 @@ class _NoteScreenState extends State<NoteScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(
           title: Text(
@@ -46,8 +60,15 @@ class _NoteScreenState extends State<NoteScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          FileHandlingModel().write(_noteTitleController.text.toString(),
-              _noteTextController.text.toString());
+          if ((widget.noteTextControllerData != null ||
+                  widget.noteTitleControllerData != null) &&
+              widget.boxKey != null) {
+            FileHandlingModel().rewrite(_noteTitleController.text.toString(),
+                _noteTextController.text.toString(), widget.boxKey!);
+          } else {
+            FileHandlingModel().write(_noteTitleController.text.toString(),
+                _noteTextController.text.toString());
+          }
           Navigator.of(context)
               .pop(MaterialPageRoute(builder: (context) => HomeScreen()));
         },
