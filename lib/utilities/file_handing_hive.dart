@@ -1,18 +1,19 @@
-import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 
 import 'hive_type_adapter.dart';
 
-class FileHandlingModel extends ChangeNotifier {
+class FileHandlingModel {
   String formattedDate =
       DateFormat('dd.MM.yyyy HH:mm').format(DateTime.now().toLocal());
   final box = Hive.box<NoteListModel>('NotesStorage');
 
   Future<void> write(String title, String text) async {
     final list = [title, text, formattedDate.toString()];
-    final noteModel = NoteListModel(list);
-    await box.add(noteModel);
+    if (title.isNotEmpty || text.isNotEmpty) {
+      final noteModel = NoteListModel(list);
+      await box.add(noteModel);
+    }
   }
 
   Future<void> rewrite(String title, String text, int boxKey) async {
@@ -40,6 +41,22 @@ class FileHandlingModel extends ChangeNotifier {
         'Data not found'
       ];
       return list;
+    }
+  }
+
+  int? search(int key, String queryText, Box<NoteListModel> box) {
+    bool titleResult = false;
+    bool textResult = false;
+    if (box.containsKey(key)) {
+      final List<String> note = box.get(key)!.data;
+
+      titleResult = note[0].contains(queryText);
+      textResult = note[1].contains(queryText);
+    }
+    if (titleResult || textResult) {
+      return key;
+    } else {
+      return null;
     }
   }
 }

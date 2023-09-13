@@ -1,12 +1,10 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:flutter/material.dart';
 
 final darkTheme = ThemeData(
-  inputDecorationTheme: InputDecorationTheme(),
+  inputDecorationTheme: const InputDecorationTheme(),
   hintColor: Colors.grey[400],
-  appBarTheme: AppBarTheme(color: Colors.transparent),
-  textTheme: TextTheme(
+  appBarTheme: const AppBarTheme(color: Colors.transparent),
+  textTheme: const TextTheme(
     headlineLarge: TextStyle(fontSize: 30, color: Colors.white),
     titleLarge: TextStyle(fontSize: 30, color: Colors.white),
     bodySmall: TextStyle(fontSize: 20, color: Colors.white),
@@ -15,14 +13,13 @@ final darkTheme = ThemeData(
       color: Colors.white,
     ),
     labelSmall: TextStyle(
-        fontStyle: FontStyle.italic,
-        color: const Color.fromARGB(126, 238, 238, 238)),
+        fontStyle: FontStyle.italic, color: Color.fromARGB(126, 238, 238, 238)),
   ),
   scaffoldBackgroundColor: Colors.grey[900],
   floatingActionButtonTheme:
       FloatingActionButtonThemeData(backgroundColor: Colors.green[900]),
   searchBarTheme: SearchBarThemeData(
-      elevation: MaterialStatePropertyAll(0),
+      elevation: const MaterialStatePropertyAll(0),
       backgroundColor: MaterialStateProperty.all(Colors.grey[700]),
       hintStyle: MaterialStateProperty.all(TextStyle(color: Colors.grey[400]))),
   iconTheme: IconThemeData(

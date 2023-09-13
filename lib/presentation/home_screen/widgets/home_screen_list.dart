@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:notes/utilities/file_handing_hive.dart';
@@ -27,11 +25,11 @@ class HomeScreenList extends StatelessWidget {
             ];
             List<String> values = snapshot.data ?? errorValues;
             return Container(
-              padding: EdgeInsets.symmetric(vertical: 10),
+              padding: const EdgeInsets.symmetric(vertical: 10),
               decoration: BoxDecoration(
                   color: Colors.green[800],
-                  borderRadius: BorderRadius.all(Radius.circular(8))),
-              margin: EdgeInsets.symmetric(horizontal: 10),
+                  borderRadius: const BorderRadius.all(Radius.circular(8))),
+              margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               child: ListTile(
                 onTap: () {
                   Navigator.of(context).push(MaterialPageRoute(
@@ -50,21 +48,21 @@ class HomeScreenList extends StatelessWidget {
                     onPressed: () {
                       box.delete(boxKey);
                     },
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.delete,
                       size: 28,
                     )),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
                     Text(
                       values[1],
                       style: theme.textTheme.bodySmall,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
                     Text(
