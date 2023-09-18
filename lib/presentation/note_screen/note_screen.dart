@@ -1,25 +1,23 @@
-// ignore_for_file: prefer_const_constructors, prefer_final_fields, library_private_types_in_public_api, use_key_in_widget_constructors, prefer_const_constructors_in_immutables, must_be_immutable
-
 import 'package:flutter/material.dart';
 import 'package:notes/presentation/home_screen/home_screen.dart';
 import 'package:notes/utilities/file_handing_hive.dart';
 
 class NoteScreen extends StatefulWidget {
-  NoteScreen(
+  const NoteScreen(
       {super.key,
       this.noteTitleControllerData,
       this.noteTextControllerData,
       this.boxKey});
-  String? noteTitleControllerData;
-  String? noteTextControllerData;
-  int? boxKey;
+  final String? noteTitleControllerData;
+  final String? noteTextControllerData;
+  final int? boxKey;
   @override
   State<NoteScreen> createState() => _NoteScreenState();
 }
 
 class _NoteScreenState extends State<NoteScreen> {
-  TextEditingController _noteTitleController = TextEditingController();
-  TextEditingController _noteTextController = TextEditingController();
+  final TextEditingController _noteTitleController = TextEditingController();
+  final TextEditingController _noteTextController = TextEditingController();
   @override
   void initState() {
     super.initState();
@@ -47,11 +45,11 @@ class _NoteScreenState extends State<NoteScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             EditTitle(controller: _noteTitleController),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             EditText(controller: _noteTextController),
@@ -70,9 +68,9 @@ class _NoteScreenState extends State<NoteScreen> {
                 _noteTextController.text.toString());
           }
           Navigator.of(context)
-              .pop(MaterialPageRoute(builder: (context) => HomeScreen()));
+              .pop(MaterialPageRoute(builder: (context) => const HomeScreen()));
         },
-        child: Icon(Icons.save),
+        child: const Icon(Icons.save),
       ),
     );
   }
@@ -81,11 +79,11 @@ class _NoteScreenState extends State<NoteScreen> {
 class EditTitle extends StatefulWidget {
   final TextEditingController _controller;
 
-  const EditTitle({required TextEditingController controller})
+  const EditTitle({super.key, required TextEditingController controller})
       : _controller = controller;
 
   @override
-  _EditTitleState createState() => _EditTitleState();
+  State<EditTitle> createState() => _EditTitleState();
 }
 
 class _EditTitleState extends State<EditTitle> {
@@ -102,12 +100,12 @@ class _EditTitleState extends State<EditTitle> {
       },
       child: Container(
         width: double.maxFinite,
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: _isEditing
             ? TextField(
                 maxLines: null,
                 cursorColor: Colors.white,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   border: InputBorder.none,
                 ),
                 autofocus: true,
@@ -146,7 +144,7 @@ class _EditTitleState extends State<EditTitle> {
 class EditText extends StatefulWidget {
   final TextEditingController _controller;
 
-  const EditText({required TextEditingController controller})
+  const EditText({super.key, required TextEditingController controller})
       : _controller = controller;
 
   @override
@@ -167,12 +165,12 @@ class _EditTextState extends State<EditText> {
       },
       child: Container(
         width: double.maxFinite,
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: _isEditing
             ? TextField(
                 cursorColor: Colors.white,
                 autofocus: true,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   border: InputBorder.none,
                 ),
                 style: TextStyle(
