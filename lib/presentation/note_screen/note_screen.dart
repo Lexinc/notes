@@ -106,6 +106,11 @@ class _EditTitleState extends State<EditTitle> {
         child: _isEditing
             ? TextField(
                 maxLines: null,
+                cursorColor: Colors.white,
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                ),
+                autofocus: true,
                 onTapOutside: (_) {
                   setState(() {
                     _isEditing = false;
@@ -166,6 +171,7 @@ class _EditTextState extends State<EditText> {
         child: _isEditing
             ? TextField(
                 cursorColor: Colors.white,
+                autofocus: true,
                 decoration: InputDecoration(
                   border: InputBorder.none,
                 ),
@@ -181,11 +187,6 @@ class _EditTextState extends State<EditText> {
                 },
                 controller: widget._controller,
                 onEditingComplete: () {
-                  setState(() {
-                    _isEditing = false;
-                  });
-                },
-                onSubmitted: (_) {
                   setState(() {
                     _isEditing = false;
                   });

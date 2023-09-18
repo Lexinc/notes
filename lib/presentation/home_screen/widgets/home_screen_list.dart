@@ -46,7 +46,42 @@ class HomeScreenList extends StatelessWidget {
                 trailing: IconButton(
                     alignment: Alignment.center,
                     onPressed: () {
-                      box.delete(boxKey);
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            backgroundColor: theme.scaffoldBackgroundColor,
+                            title: const Text(
+                              'Delete item',
+                            ),
+                            content: Text(
+                              'Are you sure you want to delete this item?',
+                              style: theme.textTheme.bodySmall,
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text('Cancel'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                  FileHandlingModel().delete(boxKey);
+                                },
+                                style: const ButtonStyle(
+                                    backgroundColor:
+                                        MaterialStatePropertyAll(Colors.red)),
+                                child: const Text(
+                                  'Delete',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      );
                     },
                     icon: const Icon(
                       Icons.delete,

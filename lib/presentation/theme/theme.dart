@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 final darkTheme = ThemeData(
-  inputDecorationTheme: const InputDecorationTheme(),
   hintColor: Colors.grey[400],
   appBarTheme: const AppBarTheme(color: Colors.transparent),
   textTheme: const TextTheme(
