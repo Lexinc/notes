@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:notes/presentation/home_screen/widgets/home_screen_list.dart';
 import 'package:notes/presentation/note_screen/note_screen.dart';
+import 'package:notes/provider/provider_list_model.dart';
 import 'package:notes/utilities/file_handing_hive.dart';
 import '../../utilities/hive_type_adapter.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
-
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -15,6 +15,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   String searchText = '';
   TextEditingController searchTextController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -23,8 +24,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final listKey = ProviderListModel.watch(context)!.model.listKey;
     final theme = Theme.of(context);
-
     Iterable<Widget> closeIconButton = [
       IconButton(
           onPressed: () {
@@ -35,6 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
           },
           icon: const Icon(Icons.close))
     ];
+
     return Scaffold(
       appBar: AppBar(
         bottom: PreferredSize(
@@ -72,33 +74,37 @@ class _HomeScreenState extends State<HomeScreen> {
               style: theme.textTheme.titleLarge,
             ));
           }
+
           return Container(
               padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: ListView.builder(
-                itemCount: box.length,
-                itemBuilder: (context, index) {
-                  int boxKey = box.keyAt(index);
+              child: AnimatedList(
+                key: listKey,
+                initialItemCount: box.length,
+                itemBuilder: (context, index, animation) {
+                  int boxItemKey = box.keyAt(index);
                   if (searchText.isEmpty) {
                     return HomeScreenList(
-                      box: box,
-                      boxKey: boxKey,
+                      boxItemKey: boxItemKey,
+                      animation: animation,
+                      index: index,
                     );
                   } else {
                     int? filteredKey =
-                        FileHandlingModel().search(boxKey, searchText, box);
+                        FileHandlingModel().search(boxItemKey, searchText, box);
                     if (filteredKey != null) {
                       return HomeScreenList(
-                        box: box,
-                        boxKey: boxKey,
+                        boxItemKey: boxItemKey,
+                        animation: animation,
+                        index: index,
                       );
                     } else {
                       return Offstage(
-                        offstage: true, // Установите true, чтобы скрыть виджет
-                        child: HomeScreenList(
-                          box: box,
-                          boxKey: boxKey,
-                        ),
-                      );
+                          offstage: true,
+                          child: HomeScreenList(
+                            boxItemKey: boxItemKey,
+                            animation: animation,
+                            index: index,
+                          ));
                     }
                   }
                 },
@@ -107,14 +113,15 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => NoteScreen()));
+          Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => const NoteScreen()));
         },
         child: const Icon(
           Icons.add,
           size: 35,
         ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }

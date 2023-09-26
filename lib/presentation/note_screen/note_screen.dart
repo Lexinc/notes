@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:notes/presentation/home_screen/home_screen.dart';
+import 'package:notes/provider/provider_list_model.dart';
 import 'package:notes/utilities/file_handing_hive.dart';
 
 class NoteScreen extends StatefulWidget {
@@ -7,10 +8,12 @@ class NoteScreen extends StatefulWidget {
       {super.key,
       this.noteTitleControllerData,
       this.noteTextControllerData,
-      this.boxKey});
+      this.boxItemKey,
+      this.index});
   final String? noteTitleControllerData;
   final String? noteTextControllerData;
-  final int? boxKey;
+  final int? boxItemKey;
+  final int? index;
   @override
   State<NoteScreen> createState() => _NoteScreenState();
 }
@@ -34,8 +37,9 @@ class _NoteScreenState extends State<NoteScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final GlobalKey<AnimatedListState> listKey =
+        ProviderListModel.watch(context)!.model.listKey;
     final theme = Theme.of(context);
-
     return Scaffold(
       appBar: AppBar(
           title: Text(
@@ -60,15 +64,20 @@ class _NoteScreenState extends State<NoteScreen> {
         onPressed: () {
           if ((widget.noteTextControllerData != null ||
                   widget.noteTitleControllerData != null) &&
-              widget.boxKey != null) {
-            FileHandlingModel().rewrite(_noteTitleController.text.toString(),
-                _noteTextController.text.toString(), widget.boxKey!);
+              widget.boxItemKey != null) {
+            FileHandlingModel().rewrite(
+                title: _noteTitleController.text.toString(),
+                text: _noteTextController.text.toString(),
+                boxItemKey: widget.boxItemKey!,
+                index: widget.index!,
+                listKey: listKey);
           } else {
             FileHandlingModel().write(_noteTitleController.text.toString(),
-                _noteTextController.text.toString());
+                _noteTextController.text.toString(), listKey);
           }
-          Navigator.of(context)
-              .pop(MaterialPageRoute(builder: (context) => const HomeScreen()));
+          Navigator.of(context).pop(MaterialPageRoute(
+            builder: (context) => const HomeScreen(),
+          ));
         },
         child: const Icon(Icons.save),
       ),

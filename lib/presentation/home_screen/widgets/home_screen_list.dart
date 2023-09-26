@@ -1,19 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:notes/provider/provider_list_model.dart';
 import 'package:notes/utilities/file_handing_hive.dart';
 import '../../../utilities/hive_type_adapter.dart';
 import '../../note_screen/note_screen.dart';
 
 class HomeScreenList extends StatelessWidget {
-  const HomeScreenList({super.key, required this.box, required this.boxKey});
+  const HomeScreenList({
+    super.key,
+    required this.boxItemKey,
+    required this.animation,
+    required this.index,
+  });
 
-  final Box<NoteListModel> box;
-  final int boxKey;
+  final int boxItemKey;
+
+  final Animation<double> animation;
+  final int index;
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => SizeTransition(
+        sizeFactor: animation,
+        child: buildItem(context),
+      );
+  Widget buildItem(context) {
+    final GlobalKey<AnimatedListState> listKey =
+        ProviderListModel.watch(context)!.model.listKey;
+    final Box<NoteListModel> box = Hive.box<NoteListModel>('NotesStorage');
     final theme = Theme.of(context);
     return FutureBuilder(
-        future: FileHandlingModel().read(boxKey),
+        future: FileHandlingModel().read(boxItemKey),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
@@ -36,7 +52,8 @@ class HomeScreenList extends StatelessWidget {
                       builder: (context) => NoteScreen(
                             noteTitleControllerData: values[0],
                             noteTextControllerData: values[1],
-                            boxKey: boxKey,
+                            boxItemKey: boxItemKey,
+                            index: index,
                           )));
                 },
                 title: Text(
@@ -68,7 +85,8 @@ class HomeScreenList extends StatelessWidget {
                               TextButton(
                                 onPressed: () {
                                   Navigator.of(context).pop();
-                                  FileHandlingModel().delete(boxKey);
+                                  FileHandlingModel()
+                                      .remove(boxItemKey, index, box, listKey);
                                 },
                                 style: const ButtonStyle(
                                     backgroundColor:
