@@ -19,7 +19,8 @@ class FileHandlingModel {
       final noteModel = NoteListModel(list);
       await box.add(noteModel);
       int index = box.length - 1;
-      listKey.currentState?.insertItem(index);
+      listKey.currentState
+          ?.insertItem(index, duration: const Duration(milliseconds: 500));
     }
   }
 
@@ -34,11 +35,11 @@ class FileHandlingModel {
     final trimmedText = text.trim();
 
     if (trimmedText.isNotEmpty || trimmedTitle.isNotEmpty) {
-      _delete(boxItemKey);
+      await box.delete(boxItemKey);
       NoteListModel noteModel = NoteListModel(list);
       await box.put(boxItemKey, noteModel);
     } else {
-      _delete(boxItemKey);
+      await box.delete(boxItemKey);
       listKey.currentState!.removeItem(
         index,
         (context, animation) => HomeScreenList(
@@ -50,35 +51,47 @@ class FileHandlingModel {
     }
   }
 
-  Future<void> _delete(int key) async {
-    await box.delete(key);
+  Future<void> remove(
+    int? boxItemKey,
+    int index,
+    Box<NoteListModel> box,
+    GlobalKey<AnimatedListState>? listKey,
+  ) async {
+    if (boxItemKey != null && listKey != null) {
+      NoteListModel? removedData = box.getAt(index);
+      await box.deleteAt(index);
+      if (listKey.currentState != null) {
+        listKey.currentState!.removeItem(
+            index,
+            (context, animation) => HomeScreenList(
+                  removedData: removedData?.data,
+                  animation: animation,
+                  index: index,
+                ),
+            duration: const Duration(milliseconds: 500));
+      }
+    }
   }
 
-  void remove(int boxItemKey, int index, Box<NoteListModel> box,
-      GlobalKey<AnimatedListState> listKey) {
-    _delete(boxItemKey);
-    listKey.currentState!.removeItem(
-      index,
-      (context, animation) => HomeScreenList(
-        boxItemKey: boxItemKey,
-        animation: animation,
-        index: index,
-      ),
-    );
-  }
-
-  Future<List<String>> read(int boxItemKey) async {
-    final boxConstraintsKey = box.containsKey(boxItemKey);
-    if (boxConstraintsKey) {
-      final NoteListModel noteModel = box.get(boxItemKey)!;
-      return noteModel.data;
+  List<String> read(int? boxItemKey, List<String>? removedData) {
+    List<String> listNotFound = [
+      'Data not found',
+      'Data not found',
+      'Data not found'
+    ];
+    List<String> listIsNull = ['Data is null', 'Data is null', 'Data is null'];
+    if (boxItemKey != null) {
+      final boxConstraintsKey = box.containsKey(boxItemKey);
+      if (boxConstraintsKey) {
+        final NoteListModel noteModel = box.get(boxItemKey)!;
+        return noteModel.data;
+      } else {
+        return listNotFound;
+      }
+    } else if (removedData != null) {
+      return removedData;
     } else {
-      List<String> list = [
-        'Data not found',
-        'Data not found',
-        'Data not found'
-      ];
-      return list;
+      return listIsNull;
     }
   }
 

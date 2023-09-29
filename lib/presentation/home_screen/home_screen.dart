@@ -12,10 +12,12 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
   String searchText = '';
   TextEditingController searchTextController = TextEditingController();
 
+  late AnimationController _animatedListController;
   @override
   void initState() {
     super.initState();
@@ -24,7 +26,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final listKey = ProviderListModel.watch(context)!.model.listKey;
+    final listKey = ProviderListModel.watch(context)?.model.listKey;
+
     final theme = Theme.of(context);
     Iterable<Widget> closeIconButton = [
       IconButton(
@@ -67,47 +70,52 @@ class _HomeScreenState extends State<HomeScreen> {
       body: ValueListenableBuilder(
         valueListenable: Hive.box<NoteListModel>('NotesStorage').listenable(),
         builder: (context, Box<NoteListModel> box, _) {
-          if (box.isEmpty) {
-            return Center(
-                child: Text(
-              'No data!',
-              style: theme.textTheme.titleLarge,
-            ));
-          }
-
           return Container(
               padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: AnimatedList(
-                key: listKey,
-                initialItemCount: box.length,
-                itemBuilder: (context, index, animation) {
-                  int boxItemKey = box.keyAt(index);
-                  if (searchText.isEmpty) {
-                    return HomeScreenList(
-                      boxItemKey: boxItemKey,
-                      animation: animation,
-                      index: index,
-                    );
-                  } else {
-                    int? filteredKey =
-                        FileHandlingModel().search(boxItemKey, searchText, box);
-                    if (filteredKey != null) {
-                      return HomeScreenList(
-                        boxItemKey: boxItemKey,
-                        animation: animation,
-                        index: index,
-                      );
-                    } else {
-                      return Offstage(
-                          offstage: true,
-                          child: HomeScreenList(
-                            boxItemKey: boxItemKey,
-                            animation: animation,
-                            index: index,
-                          ));
-                    }
-                  }
-                },
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 600),
+                child: box.isEmpty
+                    ? Center(
+                        child: Text(
+                        'No data!',
+                        style: theme.textTheme.titleLarge,
+                      ))
+                    : AnimatedList(
+                        key: listKey,
+                        initialItemCount: box.length,
+                        itemBuilder: (context, index, animation) {
+                          if (index < box.length) {
+                            int boxItemKey = box.keyAt(index);
+                            if (searchText.isEmpty) {
+                              return HomeScreenList(
+                                boxItemKey: boxItemKey,
+                                animation: animation,
+                                index: index,
+                              );
+                            } else {
+                              int? filteredKey = FileHandlingModel()
+                                  .search(boxItemKey, searchText, box);
+                              if (filteredKey != null) {
+                                return HomeScreenList(
+                                  boxItemKey: boxItemKey,
+                                  animation: animation,
+                                  index: index,
+                                );
+                              } else {
+                                return Offstage(
+                                    offstage: true,
+                                    child: HomeScreenList(
+                                      boxItemKey: boxItemKey,
+                                      animation: animation,
+                                      index: index,
+                                    ));
+                              }
+                            }
+                          } else {
+                            return const SizedBox.shrink();
+                          }
+                        },
+                      ),
               ));
         },
       ),

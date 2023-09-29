@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:notes/presentation/home_screen/home_screen.dart';
 import 'package:notes/provider/provider_list_model.dart';
 import 'package:notes/utilities/file_handing_hive.dart';
 
 class NoteScreen extends StatefulWidget {
-  const NoteScreen(
-      {super.key,
-      this.noteTitleControllerData,
-      this.noteTextControllerData,
-      this.boxItemKey,
-      this.index});
+  const NoteScreen({
+    super.key,
+    this.noteTitleControllerData,
+    this.noteTextControllerData,
+    this.boxItemKey,
+    this.index,
+  });
   final String? noteTitleControllerData;
   final String? noteTextControllerData;
   final int? boxItemKey;
@@ -40,48 +40,54 @@ class _NoteScreenState extends State<NoteScreen> {
     final GlobalKey<AnimatedListState> listKey =
         ProviderListModel.watch(context)!.model.listKey;
     final theme = Theme.of(context);
-    return Scaffold(
-      appBar: AppBar(
-          title: Text(
-        'Note',
-        style: theme.textTheme.headlineLarge,
-      )),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(
-              height: 20,
-            ),
-            EditTitle(controller: _noteTitleController),
-            const SizedBox(
-              height: 20,
-            ),
-            EditText(controller: _noteTextController),
-          ],
+
+    return FutureBuilder(builder: (BuildContext context, _) {
+      return Scaffold(
+        appBar: AppBar(
+            title: Text(
+          'Note',
+          style: theme.textTheme.headlineLarge,
+        )),
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              const SizedBox(
+                height: 20,
+              ),
+              EditTitle(controller: _noteTitleController),
+              const SizedBox(
+                height: 20,
+              ),
+              EditText(controller: _noteTextController),
+            ],
+          ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          if ((widget.noteTextControllerData != null ||
-                  widget.noteTitleControllerData != null) &&
-              widget.boxItemKey != null) {
-            FileHandlingModel().rewrite(
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            if ((widget.noteTextControllerData != null ||
+                    widget.noteTitleControllerData != null) &&
+                widget.boxItemKey != null &&
+                widget.index != null) {
+              FileHandlingModel().rewrite(
                 title: _noteTitleController.text.toString(),
                 text: _noteTextController.text.toString(),
                 boxItemKey: widget.boxItemKey!,
                 index: widget.index!,
-                listKey: listKey);
-          } else {
-            FileHandlingModel().write(_noteTitleController.text.toString(),
-                _noteTextController.text.toString(), listKey);
-          }
-          Navigator.of(context).pop(MaterialPageRoute(
-            builder: (context) => const HomeScreen(),
-          ));
-        },
-        child: const Icon(Icons.save),
-      ),
-    );
+                listKey: listKey,
+              );
+            } else {
+              FileHandlingModel().write(
+                _noteTitleController.text.toString(),
+                _noteTextController.text.toString(),
+                listKey,
+              );
+            }
+            Navigator.pop(context);
+          },
+          child: const Icon(Icons.save),
+        ),
+      );
+    });
   }
 }
 
