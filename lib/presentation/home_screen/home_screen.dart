@@ -17,7 +17,6 @@ class _HomeScreenState extends State<HomeScreen>
   String searchText = '';
   TextEditingController searchTextController = TextEditingController();
 
-  late AnimationController _animatedListController;
   @override
   void initState() {
     super.initState();

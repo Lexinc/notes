@@ -19,8 +19,10 @@ class FileHandlingModel {
       final noteModel = NoteListModel(list);
       await box.add(noteModel);
       int index = box.length - 1;
-      listKey.currentState
-          ?.insertItem(index, duration: const Duration(milliseconds: 500));
+      if (listKey.currentState != null) {
+        listKey.currentState!
+            .insertItem(index, duration: const Duration(milliseconds: 500));
+      }
     }
   }
 
